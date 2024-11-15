@@ -3,6 +3,7 @@ fastapi = "*"
 uvicorn = "*"
 pydantic = "*"
 motor = "*"
+pymongo = "*"
 cassandra-driver = "*"
 
 [requires]
