@@ -1,0 +1,6 @@
+[packages]
+fastapi = "*"
+uvicorn = "*"
+pydantic = "*"
+motor = "*"
+cassandra-driver = "*"
