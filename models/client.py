@@ -1,10 +1,13 @@
-from phone import Phone
+from pydantic import Field
+from models.phone import Phone
+from beanie import Document
+from typing import List
 
-class Client:
-    def __init__(self, client_id: int, first_name: str, last_name: str, address: str, active: int, phone: Phone):
-        self.client_id = client_id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.address = address
-        self.active = active
-        self.phone: Phone = phone
+
+class Client(Document):
+    client_id: int = Field(..., unique=True)
+    first_name: str
+    last_name: str
+    address: str
+    active: int
+    phone: List[Phone]
