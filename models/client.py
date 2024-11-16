@@ -1,13 +1,18 @@
-from pydantic import Field
-from models.phone import Phone
-from beanie import Document
-from typing import List
+class Client:
+    def __init__(self, client_id, first_name, last_name, address, active, phone_list):
+        self.client_id = client_id
+        self.first_name = first_name
+        self.last_name = last_name
+        self.address = address
+        self.active = active
+        self.phone_list = phone_list
 
-
-class Client(Document):
-    client_id: int = Field(..., unique=True)
-    first_name: str
-    last_name: str
-    address: str
-    active: int
-    phone: List[Phone]
+    def to_dict(self):
+        return {
+            "client_id": self.client_id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "address": self.address,
+            "active": self.active,
+            "phone":  self.phone_list
+        }
