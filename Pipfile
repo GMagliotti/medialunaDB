@@ -5,6 +5,7 @@ pydantic = "*"
 motor = "*"
 pymongo = "*"
 cassandra-driver = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.12"
