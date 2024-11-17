@@ -1,4 +1,27 @@
+version: '3'
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    hostname: app
+    networks:
+      - cassandra-net
+      - mongo-net
+    ports:
+      - "8000:8000"
+    depends_on:
+      mongo:
+        condition: service_started
+      cassandra1:
+        condition: service_started
+      cassandra2:
+        condition: service_started
+      cassandra3:
+        condition: service_started
+    restart: on-failure
+
   cassandra1:
     image: cassandra:latest
     container_name: cassandra1
@@ -40,6 +63,7 @@ services:
     depends_on:
       cassandra2:
         condition: service_started
+
   mongo:
     image: mongo:latest
     container_name: mongo
