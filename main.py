@@ -1,11 +1,17 @@
 from fastapi import FastAPI
-from persistence.mongo_connection import MongoConnection
 from persistence.cassandra_connection import CassandraConnection
+from controllers.client_controller import client_router
+
+cassandra_client = CassandraConnection(["cassandra1", "cassandra2", "cassandra3"], 9042)
 
 app = FastAPI()
 
-mongo_client = MongoConnection(username='root', password='example', host='localhost', port=27017, database='db')
-cassandra_client = CassandraConnection(["cassandra1", "cassandra2", "cassandra3"], 9042)
+app.include_router(client_router, prefix="/clients", tags=["clients"])
+
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the API!"}
 
 
 @app.on_event("startup")

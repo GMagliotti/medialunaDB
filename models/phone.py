@@ -1,14 +1,12 @@
-class Phone:
-    def __init__(self, area_code, phone_number, type, client_id):
-        self.area_code = area_code
-        self.phone_number = phone_number
-        self.type = type
-        self.client_id = client_id
+from pydantic import BaseModel
 
-    def to_dict(self):
-        return {
-            "area_code": self.area_code,
-            "phone_number": self.phone_number,
-            "type": self.type,
-            "client_id": self.client_id
-        }
+
+class Phone(BaseModel):
+    area_code: int
+    phone_number: int
+    type: str
+    client_id: int
+
+    class Config:
+        orm_mode = True
+

@@ -4,9 +4,9 @@ from persistence.cassandra_connection import CassandraConnection
 from persistence.mongo_connection import MongoConnection
 from models.invoice_by_client import InvoiceByClient
 from models.invoice_by_product import InvoiceByProduct
-from models.client import Client
-from models.product import Product
-from models.phone import Phone
+from models.populate.client import Client
+from models.populate.product import Product
+from models.populate.phone import Phone
 
 
 def populate_mongo(client_df, phone_df, product_df, mongo_client):
