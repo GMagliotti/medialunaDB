@@ -1,0 +1,98 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    hostname: app
+    networks:
+      - cassandra-net
+      - mongo-net
+    ports:
+      - "8000:8000"
+    depends_on:
+      mongo:
+        condition: service_started
+      cassandra1:
+        condition: service_started
+      cassandra2:
+        condition: service_started
+      cassandra3:
+        condition: service_started
+    restart: on-failure
+
+  cassandra1:
+    image: cassandra:latest
+    container_name: cassandra1
+    hostname: cassandra1
+    networks:
+      - cassandra-net
+    ports:
+      - "9042:9042"
+    environment: &cassandra_config
+      CASSANDRA_SEEDS: "cassandra1,cassandra2"
+      CASSANDRA_CLUSTER_NAME: MyCluster
+      CASSANDRA_DC: datacenter1
+      CASSANDRA_RACK: rack1
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+      CASSANDRA_NUM_TOKENS: 128
+
+  cassandra2:
+    image: cassandra:latest
+    container_name: cassandra2
+    hostname: cassandra2
+    networks:
+      - cassandra-net
+    ports:
+      - "9043:9042"
+    environment: *cassandra_config
+    depends_on:
+      cassandra1:
+        condition: service_started
+
+  cassandra3:
+    image: cassandra:latest
+    container_name: cassandra3
+    hostname: cassandra3
+    networks:
+      - cassandra-net
+    ports:
+      - "9044:9042"
+    environment: *cassandra_config
+    depends_on:
+      cassandra2:
+        condition: service_started
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    hostname: mongo
+    networks:
+      - mongo-net
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo_data:/data/db
+    depends_on:
+      cassandra3:
+        condition: service_started
+
+networks:
+  cassandra-net:
+    driver: bridge
+  mongo-net:
+    driver: bridge
+
+volumes:
+  mongo_data:
+    driver: local
+  cassandra1_data:
+    driver: local
+  cassandra2_data:
+    driver: local
+  cassandra3_data:
+    driver: local

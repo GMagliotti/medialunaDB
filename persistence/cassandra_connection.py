@@ -2,18 +2,20 @@ from cassandra.cluster import Cluster
 from models.invoice_by_client import InvoiceByClient
 from models.invoice_by_product import InvoiceByProduct
 from cassandra.cqlengine.management import sync_table
+from cassandra.cqlengine import connection
 
 
 class CassandraConnection:
-    def __init__(self, host="localhost", port=9042):
-        self.cluster: Cluster = Cluster([host], port=port)
+    def __init__(self, host=["localhost"], port=9042):
+        connection.setup(host, "cqlengine", protocol_version=3)
+        self.cluster: Cluster = Cluster(host, port=port)
         self.session = self.cluster.connect()
         self.session.execute(
-            "CREATE KEYSPACE IF NOT EXISTS invoices WITH REPLICATION = {'class': SimpleStrategy, 'replication_factor': 2}"
+            "CREATE KEYSPACE IF NOT EXISTS invoices WITH REPLICATION = {'class': \'SimpleStrategy\', 'replication_factor': 2}"
         )
         self.session.set_keyspace("invoices")
-        sync_table(InvoiceByClient)
-        sync_table(InvoiceByProduct)
+        sync_table(InvoiceByClient, keyspaces=['invoices'])
+        sync_table(InvoiceByProduct, keyspaces=['invoices'])
 
     def close(self):
         self.cluster.shutdown()

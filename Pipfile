@@ -6,6 +6,7 @@ motor = "*"
 pymongo = "*"
 cassandra-driver = "*"
 pandas = "*"
+beanie = "*"
 
 [requires]
 python_version = "3.12"
