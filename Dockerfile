@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY Pipfile* /app/
 
 # Instalar Pipenv y dependencias del proyecto
-RUN pip install pipenv && pipenv install --system --deploy
+RUN pip install pipenv && pipenv install --system
 
 COPY . /app
 
