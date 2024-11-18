@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0e694046b315ddd2a2b1845e0c99f6cab6a4bbce2659499f0bb71c09bf8cd58d"
+            "sha256": "1fb00a3e2437ceb7bfed707d999e124fadc4cc8bb1254b060bf79a6d576aafbd"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -31,6 +31,15 @@
             ],
             "markers": "python_version >= '3.9'",
             "version": "==4.6.2.post1"
+        },
+        "beanie": {
+            "hashes": [
+                "sha256:2cc6762bdd59b9040dd004ecbc7d4fd5ddd22e52743915e38d1f0f92f276bcaf",
+                "sha256:a5eee40f1e52214afeb8558c0823d7504856884770c3d56fc3cd5765efb87314"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.7' and python_version < '4.0'",
+            "version": "==1.27.0"
         },
         "cassandra-driver": {
             "hashes": [
@@ -118,6 +127,14 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==3.10"
+        },
+        "lazy-model": {
+            "hashes": [
+                "sha256:57c0e91e171530c4fca7aebc3ac05a163a85cddd941bf7527cc46c0ddafca47c",
+                "sha256:5a3241775c253e36d9069d236be8378288a93d4fc53805211fd152e04cc9c342"
+            ],
+            "markers": "python_version >= '3.7' and python_version < '4.0'",
+            "version": "==0.2.0"
         },
         "motor": {
             "hashes": [
@@ -446,6 +463,14 @@
             ],
             "markers": "python_version >= '3.8'",
             "version": "==0.41.2"
+        },
+        "toml": {
+            "hashes": [
+                "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b",
+                "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"
+            ],
+            "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2'",
+            "version": "==0.10.2"
         },
         "typing-extensions": {
             "hashes": [

@@ -1,13 +1,13 @@
 from models.product import Product
-from mongo_connection import MongoConnection
+from persistence.mongo_connection import MongoConnection
 
 class ProductRepository:
     _COLLECTION_NAME = 'products'
 
-    def __init__(self, host, port, database):
+    def __init__(self, host='localhost', port=27017, database='db'):
         # TODO receive the database connection as a parameter
         self.mongo: MongoConnection = MongoConnection();
-    
+
     def get_products(self):
         cursor = self.mongo.get_collection(self._COLLECTION_NAME).find(filter={}, batch_size=100);
         with cursor:
@@ -22,15 +22,15 @@ class ProductRepository:
 
     def insert_one(self, product: Product):
         return self.mongo.get_collection(self._COLLECTION_NAME).insert_one(self._product_to_dict(product))
-    
+
     def insert_many(self, products: list[Product]):
         collection = self.mongo.get_collection(self._COLLECTION_NAME)
         product_docs = (self._product_to_dict(product) for product in products)
         collection.insert_many(product_docs)
-    
+
     def update_one(self, product: Product):
         self.mongo.get_collection(self._COLLECTION_NAME).update_one(filter={'product_id': product.product_id}, update={'$set': self._product_to_dict(product)})
-    
+
     def delete_one(self, product: Product):
         self.mongo.get_collection(self._COLLECTION_NAME).delete_one({'product_id': product.product_id})
 
@@ -43,7 +43,7 @@ class ProductRepository:
             'price': product.price,
             'stock': product.stock
         }
-    
+
     def _dict_to_product(self, product_dict) -> Product:
         return Product(
             product_dict['product_id'],

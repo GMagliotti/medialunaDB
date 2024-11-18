@@ -2,6 +2,8 @@ import pandas as pd
 from cassandra.cqlengine.query import LWTException
 from persistence.cassandra_connection import CassandraConnection
 from persistence.mongo_connection import MongoConnection
+from persistence.client_repository import ClientRepository
+from persistence.product_repository import ProductRepository
 from models.invoice_by_client import InvoiceByClient
 from models.invoice_by_product import InvoiceByProduct
 from models.populate.client import Client
@@ -11,7 +13,8 @@ from models.populate.phone import Phone
 
 def populate_mongo(client_df, phone_df, product_df, mongo_client):
     """Populate MongoDB with client and product data."""
-    db = mongo_client.get_db()
+    client_repo = ClientRepository()
+    product_repo = ProductRepository()
 
     # Populate Clients
     clients = {}
@@ -24,28 +27,17 @@ def populate_mongo(client_df, phone_df, product_df, mongo_client):
                 last_name=row["apellido"],
                 address=row["direccion"],
                 active=row["activo"],
-                phone_list=[]
+                phone_list=[],
             )
-
     # Add phones to the clients
     for _, row in phone_df.iterrows():
         phone = Phone(
             area_code=row["codigo_area"],
             phone_number=row["nro_telefono"],
-            type=row["tipo"],
-            client_id=row["nro_cliente"]
+            _type=row["tipo"],
+            client_id=row["nro_cliente"],
         )
-        phone_dict = phone.__dict__  # Convert Phone instance to a dictionary
-        clients[row["nro_cliente"]].phone_list.append(phone_dict)
-
-    # Upsert clients into MongoDB
-    collection = db["clients"]
-    for client in clients.values():
-        collection.update_one(
-            {"client_id": client.client_id},
-            {"$set": client.to_dict()},
-            upsert=True
-        )
+        clients[row["nro_cliente"]].phone_list.append(phone)
 
     # Populate Products
     products = []
@@ -63,18 +55,21 @@ def populate_mongo(client_df, phone_df, product_df, mongo_client):
                 name=name,
                 description=description,
                 price=price,
-                stock=stock
+                stock=stock,
             )
         )
+    # Clear database to avoid redundant info
+    for client_id in clients.keys():
+        client_repo.delete_one_by_id(client_id)
+
+    for product in products:
+        product_repo.delete_one(product)
+
+    # Upsert clients into MongoDB
+    client_repo.insert_many(clients.values())
 
     # Upsert products into MongoDB
-    product_collection = db["products"]
-    for product in products:
-        product_collection.update_one(
-            {"product_id": product.product_id},
-            {"$set": product.__dict__},
-            upsert=True
-        )
+    product_repo.insert_many(products)
 
     print("MongoDB population complete.")
 
@@ -109,7 +104,8 @@ def populate_cassandra(invoice_df, invoice_details_df):
                 amount=row["cantidad"],
             )
         except LWTException as e:
-            print(e.existing)
+            # print(e.existing)
+            pass
 
     print("Cassandra population complete.")
     cassandra_client.close()
@@ -124,11 +120,14 @@ def main():
     product_df = pd.read_csv("data/e01_producto.csv", sep=";")
 
     # Initialize MongoDB connection (sincrónico)
-    mongo_client = MongoConnection(username='root', password='example', host='localhost', port=27017, database='db')
+    mongo_client = MongoConnection(
+        username="root", password="example", host="localhost", port=27017, database="db"
+    )
 
     # Populate databases
     populate_mongo(client_df, phone_df, product_df, mongo_client)
-    populate_cassandra(invoice_df, invoice_details_df)
+
+    # populate_cassandra(invoice_df, invoice_details_df)
 
     # Close MongoDB connection
     mongo_client.close()
@@ -136,6 +135,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-

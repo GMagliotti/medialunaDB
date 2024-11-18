@@ -14,5 +14,5 @@ class Client:
             "last_name": self.last_name,
             "address": self.address,
             "active": self.active,
-            "phone":  self.phone_list
+            "phone": [phone.to_dict() for phone in self.phone_list]
         }

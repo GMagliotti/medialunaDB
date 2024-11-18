@@ -9,14 +9,13 @@ from generators import get_mongo_connection
 client_router = APIRouter()
 
 
-@client_router.get("/", response_model=List[Client])
+@client_router.get("/clients", response_model=List[Client])
 async def get_clients(mongo_client: MongoConnection = Depends(get_mongo_connection)):
     client_service = ClientService(mongo_client)
     return client_service.get_clients()
 
 
-@client_router.get("/{first_name}/{last_name}/phones", response_model=List[Phone])
+@client_router.get("/clients/{first_name}/{last_name}/phones", response_model=List[Phone])
 async def get_client_phones(first_name: str, last_name: str, mongo_client: MongoConnection = Depends(get_mongo_connection)):
     client_service = ClientService(mongo_client)
     return client_service.get_client_by_name(first_name, last_name)
-
