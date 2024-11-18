@@ -27,6 +27,12 @@ class ProductRepository:
         collection = self.mongo.get_collection(self._COLLECTION_NAME)
         product_docs = (self._product_to_dict(product) for product in products)
         collection.insert_many(product_docs)
+    
+    def update_one(self, product: Product):
+        self.mongo.get_collection(self._COLLECTION_NAME).update_one(filter={'product_id': product.product_id}, update={'$set': self._product_to_dict(product)})
+    
+    def delete_one(self, product: Product):
+        self.mongo.get_collection(self._COLLECTION_NAME).delete_one({'product_id': product.product_id})
 
     def _product_to_dict(self, product: Product) -> dict:
         return {

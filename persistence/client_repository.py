@@ -1,6 +1,6 @@
 from mongo_connection import MongoConnection
-from models.client import Client
-from models.phone import Phone
+from models.populate.client import Client
+from models.populate.phone import Phone
 
 class ClientRepository:
     _COLLECTION_NAME = 'clients'
@@ -16,6 +16,12 @@ class ClientRepository:
         collection = self.mongo.get_collection(self._COLLECTION_NAME)
         client_docs = (self._client_to_dict(client) for client in clients)
         collection.insert_many(client_docs)
+
+    def update_one(self, client: Client):
+        self.mongo.get_collection(self._COLLECTION_NAME).update_one(filter={'client_id': client.client_id}, update={'$set': self._client_to_dict(client)})
+
+    def delete_one(self, client: Client):
+        self.mongo.get_collection(self._COLLECTION_NAME).delete_one({'client_id': client.client_id})
 
     def get_clients(self):
         cursor = self.mongo.get_collection(self._COLLECTION_NAME).find(filter={}, batch_size=100);
