@@ -6,6 +6,7 @@ from persistence.client_repository import ClientRepository
 from persistence.product_repository import ProductRepository
 from models.invoice_by_client import InvoiceByClient
 from models.invoice_by_product import InvoiceByProduct
+from models.invoice_by_date import InvoiceByDate
 from models.populate.client import Client
 from models.populate.product import Product
 from models.populate.phone import Phone
@@ -103,6 +104,16 @@ def populate_cassandra(invoice_df, invoice_details_df):
                 tax=row["iva"],
                 amount=row["cantidad"],
             )
+            InvoiceByDate.if_not_exists().create(
+                client_id=row["nro_cliente"],
+                product_id=row["codigo_producto"],
+                date=row["fecha"],
+                invoice_id=row["nro_factura"],
+                item_number=row["nro_item"],
+                total_with_tax=row["total_con_iva"],
+                tax=row["iva"],
+                amount=row["cantidad"],
+            )
         except LWTException as e:
             # print(e.existing)
             pass
@@ -127,7 +138,7 @@ def main():
     # Populate databases
     populate_mongo(client_df, phone_df, product_df, mongo_client)
 
-    # populate_cassandra(invoice_df, invoice_details_df)
+    populate_cassandra(invoice_df, invoice_details_df)
 
     # Close MongoDB connection
     mongo_client.close()
