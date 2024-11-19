@@ -1,5 +1,9 @@
-class InvoiceDetail:
-    def __init__(self, item_pos: int, item_qty: float, product_id: int):
-        self.item_pos = item_pos
-        self.item_qty = item_qty
-        self.product_id = product_id
+from cassandra.cqlengine import columns
+from cassandra.cqlengine.models import Model
+
+class InvoiceDetail(Model):
+    __keyspace__ = "invoices"
+    product_id = columns.Integer(primary_key=True)
+    invoice_id = columns.Integer(primary_key=True, clustering_order="DESC")
+    item_number = columns.Integer(primary_key=True, clustering_order="DESC")
+    amount = columns.Float(index=True)

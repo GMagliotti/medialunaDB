@@ -1,6 +1,6 @@
 from cassandra.cluster import Cluster
 from models.invoice_by_client import InvoiceByClient
-from models.invoice_by_product import InvoiceByProduct
+from models.invoice_detail import InvoiceDetail
 from models.invoice_by_date import InvoiceByDate
 from cassandra.cqlengine.management import sync_table
 from cassandra.cqlengine import connection
@@ -16,7 +16,7 @@ class CassandraConnection:
         )
         self.session.set_keyspace("invoices")
         sync_table(InvoiceByClient, keyspaces=['invoices'])
-        sync_table(InvoiceByProduct, keyspaces=['invoices'])
+        sync_table(InvoiceDetail, keyspaces=['invoices'])
         sync_table(InvoiceByDate, keyspaces=['invoices'])
 
     def close(self):

@@ -34,15 +34,16 @@ if __name__ == "__main__":
         print(invoice.date)
 
     connection.close()
-    """
 
     clients_m = []
     clients = client_service.get_clients_with_invoices(page=0, page_size=0)
     
     print(f'CLIENT WITH INVOICES: {len(list(clients))}')
 
-    clients = client_service.get_clients_with_no_invoices(page=0, page_size=0)
+    clients_2 = client_service.get_clients_with_no_invoices(page=0, page_size=0)
     print(f'CLIENT WITH NO INVOICES: {len(list(clients))}')
+    for c in clients_2:
+        print(f'{c.client_id}\n')
     
     clients = client_service.get_clients(page=0, page_size=0)
     print(f'TOTAL CLIENTS: {len(list(clients))}')
@@ -53,3 +54,12 @@ if __name__ == "__main__":
     
     print(len(clients))
     print(f'{list(map(lambda a: a['invoice_count'], clients))}')
+    print(clients[57])
+    print(clients[61])
+    """
+    clients = list(client_service.get_clients_with_total_expenses(page=0, page_size=0))
+
+    for c in clients:
+        print(c['client'].first_name)
+        print(c['client'].last_name)
+        print(c['expenses'])

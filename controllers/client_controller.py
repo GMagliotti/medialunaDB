@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from models.client import Client
 from models.client_with_invoice_count import ClientWithInvoiceCount
+from models.client_with_total_expenses import ClientWithTotalExpenses
 from models.phone import Phone
 from models.client_phones_response import ClientPhonesResponse
 from models.client_with_phone import PhoneWithClient
@@ -106,4 +107,18 @@ async def get_clients(
     
     client_service.end()
     
+    return clients_m
+
+@client_router.get("/with_total_expenses", response_model=List[ClientWithTotalExpenses])
+async def get_clients(
+    page: int = 0,
+    page_size: int = 0,
+    mongo_client: MongoConnection = Depends(get_mongo_connection),
+    cassandra_client: CassandraConnection = Depends(get_cassandra_connection),
+):
+    client_service = ClientService(mongo_client, cassandra_client)
+    
+    clients = list(client_service.get_clients_with_total_expenses(page=page, page_size=page_size))
+    clients_m = list(map(lambda c: ClientWithTotalExpenses.from_model(c), clients))
+        
     return clients_m

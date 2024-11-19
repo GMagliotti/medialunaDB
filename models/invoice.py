@@ -3,7 +3,7 @@ from typing import List
 from invoice_detail import InvoiceDetail
 
 # TODO -> Pasar a BaseModel así se puede devolver con FastAPI
-class Invoice:
+class Invoice(BaseModel):
     def __init__(self, invoice_id: int, date, amount_before_tax: float, tax: float, client_id: int, invoice_detail: InvoiceDetail):
         self.invoice_id = invoice_id
         self.date = date
