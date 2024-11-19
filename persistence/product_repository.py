@@ -50,6 +50,8 @@ class ProductRepository:
             self.mongo.get_collection(self._COLLECTION_NAME).find({'product_id': { "$in": product_ids}})
             );
 
+    def get_products_by_product_brand(self, brand: str, skip: int = 0, limit: int = 0):
+        return list(map(lambda p: self._dict_to_product(p), self.mongo.get_collection(self._COLLECTION_NAME).find({'brand': { '$regex': f'/{brand}/i'}}, skip=skip, limit=limit)))
 
     def _product_to_dict(self, product: Product) -> dict:
         return {
