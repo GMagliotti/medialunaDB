@@ -1,4 +1,6 @@
 // Define the function in the MongoDB shell
+db = connect( 'mongodb://localhost/db' );
+
 db.system.js.save({
     _id: "fetchDataFromCassandra",
     value: function() {
