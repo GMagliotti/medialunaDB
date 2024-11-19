@@ -1,8 +1,68 @@
 from services.client_service import ClientService
 from services.invoice_service import InvoiceService
+from services.product_service import ProductService
+from models.populate.client import Client
+from models.populate.product import Product
 from persistence.invoice_repository import InvoiceRepository
 from persistence.cassandra_connection import CassandraConnection
 from persistence.mongo_connection import MongoConnection
+
+def query1(client_service: ClientService):
+    for client in client_service.get_clients():
+        print(client.to_dict())
+
+def query2(client_service: ClientService):
+    for client in client_service.get_clients_by_name(first_name='Jacob', last_name='Cooper'):
+        print(client.to_dict())
+
+def query3(client_service: ClientService):
+    for client in client_service.get_phones_with_client():
+        print(client)
+
+def query4(client_service: ClientService):
+    for client in client_service.get_clients_with_invoices():
+        print(client.to_dict())
+
+def query5(client_service: ClientService):
+    for client in client_service.get_clients_with_no_invoices():
+        print(client.to_dict())
+
+def query6(client_service: ClientService):
+    for client in client_service.get_clients_with_invoice_count():
+        print(client)
+
+def query7(invoice_service: InvoiceService):
+    for invoice in invoice_service.get_invoices_by_user_name_and_surname(first_name='Kai', last_name='Bullock'):
+        print(invoice)
+
+def query8(product_service: ProductService):
+    for product in product_service.get_products_with_invoices():
+        print(invoice)
+
+def query9(invoice_service: InvoiceService):
+    for invoice in invoice_service.get_invoices_by_product_brand(brand='Ipsum'):
+        print(invoice)
+
+def query10(client_service: ClientService):
+    for client in client_service.get_clients_with_total_expenses():
+        print(client)
+
+def query12(invoice_service: InvoiceService):
+    invoice_service.create_view_no_invoice_products();
+
+def query13(client_service: ClientService):
+    client = Client(1986, 'Mario', 'Mario', 'Mushroom Kingdom', 't', [])
+    client_service.add_client(client)
+    client.first_name = 'Luigi'
+    client_service.modify_client(client)
+    client_service.delete_client_id(client.client_id)
+
+def query14(product_service: ProductService):
+    product = Product(1969, 'Dodge', 'Charger R/T', 'vroom vroom :)', 3575.0, 1)
+    #product_service.add_product(product)
+    product.name = 'Challenger R/T'
+    product_service.modify_product(product)
+    product_service.delete_product_by_id(product.product_id)
 
 if __name__ == "__main__":
     cassandra_connection = CassandraConnection()
@@ -10,7 +70,13 @@ if __name__ == "__main__":
     client_service = ClientService(
         mongo_connection=mongo_connection, cassandra_connection=cassandra_connection
     )
+    product_service = ProductService(mongo_connection, cassandra_connection)
+
+
     invoice_service = InvoiceService(mongo_connection, cassandra_connection)
+
+    query14(product_service)
+
     """
     for client in client_service.get_clients_with_invoices():
         print(client.to_dict())
@@ -64,6 +130,24 @@ if __name__ == "__main__":
         print(c['client'].first_name)
         print(c['client'].last_name)
         print(c['expenses'])
-    """
+    
     invoices = invoice_service.get_invoices_by_product_brand(brand="Ipsum", page=0, page_size=0)
     print(invoices)
+    """
+    """
+    * Q1  RUNS 
+    * Q2  FIX (devuelve todo, solo deberia ser cli_id y fono) 
+    * Q3  RUNS (no .to_dict())
+    * Q4  RUNS 
+    * Q5  RUNS
+    * Q6  RUNS (pero corre medio roto, testear con papi)
+    * Q7  FIX 
+    * Q8  FIX
+    * Q9  FIX (returns empty array)
+    * Q10 RUNS (nros medio kinky nasty)
+    * Q11 ?
+    * Q12 RUNS
+    * Q13 WORKS 
+    * Q14 WORKS
+    """
+

@@ -88,12 +88,6 @@ class ClientService:
     def add_clients(self, clients: list[Client]):
         self.client_repository.insert_many(clients)
 
-    def edit_client(self, client: Client):
-        self.client_repository.update_one(client)
-
-    def delete_client(self, client: Client):
-        self.client_repository.delete_one(client)
-
     def modify_client(self, client: Client):
         self.client_repository.update_one(client)
 
@@ -101,7 +95,7 @@ class ClientService:
         self.client_repository.delete_one(client)
 
     def delete_client_id(self, client_id: int):
-        self.client_repository.delete_one(client_id)
+        self.client_repository.delete_one_by_id(client_id)
 
     def end(self):
         self.invoice_repository.close()

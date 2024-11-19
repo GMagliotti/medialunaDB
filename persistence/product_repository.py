@@ -34,6 +34,9 @@ class ProductRepository:
     def delete_one(self, product: Product):
         self.mongo.get_collection(self._COLLECTION_NAME).delete_one({'product_id': product.product_id})
 
+    def delete_one_by_id(self, product_id: int):
+        self.mongo.get_collection(self._COLLECTION_NAME).delete_one({'product_id': product_id})
+
     def create_view_no_invoice_products(self, product_ids: list):
         view_name = "no_invoice_products"
         self.mongo.drop_view(view_name)
