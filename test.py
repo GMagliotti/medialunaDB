@@ -1,4 +1,5 @@
 from services.client_service import ClientService
+from services.invoice_service import InvoiceService
 from persistence.invoice_repository import InvoiceRepository
 from persistence.cassandra_connection import CassandraConnection
 from persistence.mongo_connection import MongoConnection
@@ -9,6 +10,7 @@ if __name__ == "__main__":
     client_service = ClientService(
         mongo_connection=mongo_connection, cassandra_connection=cassandra_connection
     )
+    invoice_service = InvoiceService(mongo_connection, cassandra_connection)
     """
     for client in client_service.get_clients_with_invoices():
         print(client.to_dict())
@@ -56,10 +58,12 @@ if __name__ == "__main__":
     print(f'{list(map(lambda a: a['invoice_count'], clients))}')
     print(clients[57])
     print(clients[61])
-    """
     clients = list(client_service.get_clients_with_total_expenses(page=0, page_size=0))
 
     for c in clients:
         print(c['client'].first_name)
         print(c['client'].last_name)
         print(c['expenses'])
+    """
+    invoices = invoice_service.get_invoices_by_product_brand(brand="Ipsum", page=0, page_size=0)
+    print(invoices)
