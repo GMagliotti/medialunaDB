@@ -11,11 +11,11 @@ product_router = APIRouter()
 
 @product_router.get("/", response_model=List[ProductDTO])
 async def get_products(
-        with_invoices: bool | None = None,
-        page: int = 0,
-        page_size: int = 0,
-        mongo_client: MongoConnection = Depends(get_mongo_connection),
-        cassandra_client: CassandraConnection = Depends(get_cassandra_connection),
+    with_invoices: bool | None = None,
+    page: int = 0,
+    page_size: int = 0,
+    mongo_client: MongoConnection = Depends(get_mongo_connection),
+    cassandra_client: CassandraConnection = Depends(get_cassandra_connection),
 ):
     product_service = ProductService(mongo_client, cassandra_client)
 
@@ -29,9 +29,18 @@ async def get_products(
 
     raw_products, conversion_method = fetch_products(with_invoices)
 
-    result = [
-        conversion_method(product)
-        for product in raw_products
-    ]
+    result = [conversion_method(product) for product in raw_products]
 
     return result
+
+
+@product_router.get("/id-with-invoices", response_model=List[int])
+async def get_product_id_with_invoices(
+    page: int = 0,
+    page_size: int = 0,
+    mongo_client: MongoConnection = Depends(get_mongo_connection),
+    cassandra_client: CassandraConnection = Depends(get_cassandra_connection),
+):
+    product_service = ProductService(mongo_client, cassandra_client)
+
+    return product_service.get_product_ids_with_invoices()
