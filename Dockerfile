@@ -8,10 +8,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 # Copiar el Pipfile y Pipfile.lock
-COPY Pipfile* /app/
+COPY Pipfile /app/
 
 # Instalar Pipenv y dependencias del proyecto
-RUN pip install pipenv && pipenv install --system
+ENV PATH ${HOME}/app/.local/bin:${PATH}
+
+RUN pip install pipenv && pipenv install
 
 COPY . /app
 
@@ -19,4 +21,4 @@ COPY . /app
 EXPOSE 8000
 
 # Comando para iniciar la aplicación
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["pipenv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

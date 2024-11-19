@@ -10,6 +10,8 @@ services:
       - mongo-net
     ports:
       - "8000:8000"
+    environment:
+      PATH: $HOME/.local/bin:$PATH
     depends_on:
       mongo:
         condition: service_started
@@ -29,6 +31,11 @@ services:
       - cassandra-net
     ports:
       - "9042:9042"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500MB"
     environment: &cassandra_config
       CASSANDRA_SEEDS: "cassandra1,cassandra2"
       CASSANDRA_CLUSTER_NAME: MyCluster
@@ -37,6 +44,7 @@ services:
       CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
       CASSANDRA_NUM_TOKENS: 128
       CQLENG_ALLOW_SCHEMA_MANAGEMENT: 1
+      JVM_OPTS: -Xms128m -Xmx500m
 
   cassandra2:
     image: cassandra:latest
@@ -50,6 +58,11 @@ services:
     depends_on:
       cassandra1:
         condition: service_started
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500MB"
 
   cassandra3:
     image: cassandra:latest
@@ -63,6 +76,11 @@ services:
     depends_on:
       cassandra2:
         condition: service_started
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500MB"
 
   mongo:
     image: mongo:latest
