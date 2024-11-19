@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
 from models.client import Client
+from models.populate.client import Client as ClientServiceModel
+from models.populate.phone import Phone as PhoneServiceModel
 from models.client_with_invoice_count import ClientWithInvoiceCount
 from models.client_with_total_expenses import ClientWithTotalExpenses
 from models.phone import Phone
@@ -12,7 +14,6 @@ from persistence.cassandra_connection import CassandraConnection
 from generators import get_mongo_connection, get_cassandra_connection
 
 client_router = APIRouter()
-
 
 @client_router.get("/", response_model=List[Client])
 async def get_clients(
@@ -39,6 +40,52 @@ async def get_clients(
     
     return clients_m
 
+@client_router.post("/", status_code=status.HTTP_201_CREATED)
+async def add_client(
+    client: Client,
+    mongo_client: MongoConnection = Depends(get_mongo_connection),
+    cassandra_client: CassandraConnection = Depends(get_cassandra_connection),
+):
+    client_model = ClientServiceModel(
+        client.client_id,
+        client.first_name,
+        client.last_name,
+        client.address,
+        client.active,
+        [PhoneServiceModel(phone.area_code, phone.phone_number, phone.type, client.client_id) for phone in client.phones]
+    )
+    client_service = ClientService(mongo_client, cassandra_client)
+    client_service.add_client(client_model)
+    return {"message": "Client added successfully"}
+
+@client_router.put("/{client_id}", status_code=status.HTTP_200_OK)
+async def add_client(
+    client_id: int,
+    client: Client,
+    mongo_client: MongoConnection = Depends(get_mongo_connection),
+    cassandra_client: CassandraConnection = Depends(get_cassandra_connection),
+):
+    client_model = ClientServiceModel(
+        client.client_id,
+        client.first_name,
+        client.last_name,
+        client.address,
+        client.active,
+        [PhoneServiceModel(phone.area_code, phone.phone_number, phone.type, client.client_id) for phone in client.phones]
+    )
+    client_service = ClientService(mongo_client, cassandra_client)
+    client_service.modify_client(client_model)
+    return {"message": "Client modified successfully"}  
+
+@client_router.delete("/{client_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def add_client(
+    client_id: int,
+    mongo_client: MongoConnection = Depends(get_mongo_connection),
+    cassandra_client: CassandraConnection = Depends(get_cassandra_connection),
+):
+    client_service = ClientService(mongo_client, cassandra_client)
+    client_service.delete_client_id(client_id)
+    return {"message": "Client deleted successfully"}  
 
 @client_router.get(
     "/{first_name}/{last_name}/phones-and-id", response_model=List[ClientPhonesResponse]
