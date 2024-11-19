@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     invoice_service = InvoiceService(mongo_connection, cassandra_connection)
 
-    query9(invoice_service)
+    query8(product_service)
 
     """
     for client in client_service.get_clients_with_invoices():
