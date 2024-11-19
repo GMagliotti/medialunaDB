@@ -68,11 +68,13 @@ async def get_client_phones_and_id(
 
 @client_router.get("/phones", response_model=List[PhoneWithClient])
 async def get_phones_with_client(
+    page: int = 0,
+    page_size: int = 0,
     mongo_client: MongoConnection = Depends(get_mongo_connection),
     cassandra_client: CassandraConnection = Depends(get_cassandra_connection),
 ):
     client_service = ClientService(mongo_client, cassandra_client)
-    clients_with_phones = client_service.get_phones_with_client()
+    clients_with_phones = client_service.get_phones_with_client(page=page, page_size=page_size)
 
     response = [
         PhoneWithClient(

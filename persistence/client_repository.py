@@ -66,8 +66,14 @@ class ClientRepository:
                 }
             },
         ]
+
+        if skip > 0:
+            pipeline.append({"$skip": skip})
+        if limit > 0:
+            pipeline.append({"$limit": limit})
+
         return self.mongo.get_collection(self._COLLECTION_NAME).aggregate(
-            pipeline, allowDiskUse=True, batchSize=100, skip=skip, limit=limit
+            pipeline, allowDiskUse=True, batchSize=100
         )
 
     def get_client(self, client_id: int) -> Client:
