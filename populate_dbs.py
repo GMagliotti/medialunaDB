@@ -7,6 +7,7 @@ from persistence.product_repository import ProductRepository
 from models.invoice_by_client import InvoiceByClient
 from models.invoice_by_product import InvoiceByProduct
 from models.invoice_by_date import InvoiceByDate
+from models.invoice_by_id import InvoiceById
 from models.populate.client import Client
 from models.populate.product import Product
 from models.populate.phone import Phone
@@ -82,7 +83,7 @@ def populate_cassandra(invoice_df, invoice_details_df):
     cassandra_client = CassandraConnection()
     cassandra_client.set_default_keyspace("invoices")
 
-    for _, row in joined_invoice.iterrows():
+    for i, row in joined_invoice.iterrows():
         try:
             InvoiceByClient.if_not_exists().create(
                 client_id=row["nro_cliente"],
@@ -114,9 +115,18 @@ def populate_cassandra(invoice_df, invoice_details_df):
                 tax=row["iva"],
                 amount=row["cantidad"],
             )
+            InvoiceById.if_not_exists().create(
+                client_id=row["nro_cliente"],
+                product_id=row["codigo_producto"],
+                date=row["fecha"],
+                invoice_id=row["nro_factura"],
+                item_number=row["nro_item"],
+                total_with_tax=row["total_con_iva"],
+                tax=row["iva"],
+                amount=row["cantidad"],
+            )
         except LWTException as e:
-            # print(e.existing)
-            pass
+            print(f'index: {i} - {e.existing}')
 
     print("Cassandra population complete.")
     cassandra_client.close()

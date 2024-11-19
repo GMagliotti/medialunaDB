@@ -9,7 +9,20 @@ class Client(BaseModel):
     last_name: str
     address: str
     active: int
-    phone: List[Phone]
+    phones: List[Phone]
+
+    @staticmethod
+    def from_model(model):
+        return Client(
+            client_id=model.client_id,
+            first_name=model.first_name,
+            last_name=model.last_name,
+            address=model.address,
+            active=model.active,
+            phones=[Phone.from_model(phone) for phone in model.phone_list],
+        )
 
     class Config:
         orm_mode = True
+    
+

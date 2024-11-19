@@ -1,6 +1,8 @@
 from typing import List
 from models.populate.client import Client
 from models.populate.phone import Phone
+from models.client import Client as ClientDTO
+from models.phone import Phone as PhoneDTO
 from fastapi import HTTPException
 from persistence.client_repository import ClientRepository
 from persistence.invoice_repository import InvoiceRepository
@@ -21,14 +23,14 @@ class ClientService:
         skip = page * page_size
         limit = page_size
         return self.client_repository.get_clients(skip=skip, limit=limit)
-
+        
     def get_clients_by_name(
         self, first_name: str, last_name: str, page: int = 0, pageSize: int = 0
     ):
         skip = page * pageSize
         limit = pageSize
         return self.client_repository.get_clients_by_name(
-            first_name, last_name, skip=skip, limit=limit
+            first_name, last_name, skip=int(skip), limit=int(limit)
         )
 
     def get_phones_with_client(self, page: int = 0, page_size: int = 0):
@@ -41,7 +43,7 @@ class ClientService:
         limit = page_size
         client_ids = self.invoice_repository.get_invoices_client_ids()
         return self.client_repository.get_clients(
-            filter={"client_id": {"$in": list(client_ids)}}, skip=skip, limit=limit
+            filter={"client_id": {"$in": list(client_ids)}}, skip=int(skip), limit=int(limit)
         )
 
     def get_clients_with_invoice_count(self, page: int = 0, page_size: int = 0):
@@ -53,9 +55,7 @@ class ClientService:
             clients_with_invoice_count.append(
                 {
                     "client": c,
-                    "invoice_count": self.invoice_repository.get_count_by_client(
-                        c.client_id
-                    ),
+                    "invoice_count": self.invoice_repository.get_count_by_client(client_id=c.client_id),
                 }
             )
         return clients_with_invoice_count
@@ -69,9 +69,7 @@ class ClientService:
             clients_with_expenses.append(
                 {
                     "client": c,
-                    "expenses": self.invoice_repository.get_client_total_expenses(
-                        c.client_id
-                    ),
+                    "expenses": self.invoice_repository.get_client_total_expenses(c.client_id),
                 }
             )
         return clients_with_expenses
@@ -81,7 +79,7 @@ class ClientService:
         limit = page_size
         client_ids = self.invoice_repository.get_invoices_client_ids()
         return self.client_repository.get_clients(
-            {"client_id": {"$nin": client_ids}}, skip, limit
+            {"client_id": {"$nin": list(client_ids)}}, skip, limit
         )
 
     def add_client(self, client: Client):

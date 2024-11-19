@@ -1,41 +1,17 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: app
-    hostname: app
-    networks:
-      - cassandra-net
-      - mongo-net
-    ports:
-      - "8000:8000"
-    environment:
-      PATH: $HOME/.local/bin:$PATH
-    depends_on:
-      mongo:
-        condition: service_started
-      cassandra1:
-        condition: service_started
-      cassandra2:
-        condition: service_started
-      cassandra3:
-        condition: service_started
-    restart: on-failure
-
   cassandra1:
     image: cassandra:latest
     container_name: cassandra1
     hostname: cassandra1
     networks:
-      - cassandra-net
+      - net
     ports:
       - "9042:9042"
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "500MB"
+          cpus: "0.6"
+          memory: "700MB"
     environment: &cassandra_config
       CASSANDRA_SEEDS: "cassandra1,cassandra2"
       CASSANDRA_CLUSTER_NAME: MyCluster
@@ -44,14 +20,14 @@ services:
       CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
       CASSANDRA_NUM_TOKENS: 128
       CQLENG_ALLOW_SCHEMA_MANAGEMENT: 1
-      JVM_OPTS: -Xms128m -Xmx500m
+      JVM_OPTS: -Xms128m -Xmx600m
 
   cassandra2:
     image: cassandra:latest
     container_name: cassandra2
     hostname: cassandra2
     networks:
-      - cassandra-net
+      - net
     ports:
       - "9043:9042"
     environment: *cassandra_config
@@ -61,15 +37,15 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "500MB"
+          cpus: "0.6"
+          memory: "700MB"
 
   cassandra3:
     image: cassandra:latest
     container_name: cassandra3
     hostname: cassandra3
     networks:
-      - cassandra-net
+      - net
     ports:
       - "9044:9042"
     environment: *cassandra_config
@@ -79,15 +55,15 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "500MB"
+          cpus: "0.6"
+          memory: "700MB"
 
   mongo:
     image: mongo:latest
     container_name: mongo
     hostname: mongo
     networks:
-      - mongo-net
+      - net
     ports:
       - "27017:27017"
     environment:
@@ -100,9 +76,7 @@ services:
         condition: service_started
 
 networks:
-  cassandra-net:
-    driver: bridge
-  mongo-net:
+  net:
     driver: bridge
 
 volumes:

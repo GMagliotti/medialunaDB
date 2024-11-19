@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from persistence.cassandra_connection import CassandraConnection
+from persistence.mongo_connection import MongoConnection
 from controllers.client_controller import client_router
 
-cassandra_client = CassandraConnection(["cassandra1", "cassandra2", "cassandra3"], 9042)
+cassandra_client = CassandraConnection(["localhost"], 9042)
+mongo_client = MongoConnection()
 
 app = FastAPI()
 
