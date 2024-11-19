@@ -59,7 +59,7 @@ async def add_client(
     return {"message": "Client added successfully"}
 
 @client_router.put("/{client_id}", status_code=status.HTTP_200_OK)
-async def add_client(
+async def put_client(
     client_id: int,
     client: Client,
     mongo_client: MongoConnection = Depends(get_mongo_connection),
@@ -78,7 +78,7 @@ async def add_client(
     return {"message": "Client modified successfully"}  
 
 @client_router.delete("/{client_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def add_client(
+async def delete_client(
     client_id: int,
     mongo_client: MongoConnection = Depends(get_mongo_connection),
     cassandra_client: CassandraConnection = Depends(get_cassandra_connection),
