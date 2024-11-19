@@ -37,11 +37,13 @@ def query7(invoice_service: InvoiceService):
 
 def query8(product_service: ProductService):
     for product in product_service.get_products_with_invoices():
-        print(invoice)
+        print(product)
 
 def query9(invoice_service: InvoiceService):
-    for invoice in invoice_service.get_invoices_by_product_brand(brand='Ipsum'):
-        print(invoice)
+    invoice_list = invoice_service.get_invoices_by_product_brand(brand='Ipsum')
+    for invoice in invoice_list:
+        for a in invoice:
+            print(a)
 
 def query10(client_service: ClientService):
     for client in client_service.get_clients_with_total_expenses():
@@ -75,7 +77,7 @@ if __name__ == "__main__":
 
     invoice_service = InvoiceService(mongo_connection, cassandra_connection)
 
-    query14(product_service)
+    query9(invoice_service)
 
     """
     for client in client_service.get_clients_with_invoices():
@@ -141,10 +143,10 @@ if __name__ == "__main__":
     * Q4  RUNS 
     * Q5  RUNS
     * Q6  RUNS (pero corre medio roto, testear con papi)
-    * Q7  FIX 
+    * Q7  FIX // juani
     * Q8  FIX
-    * Q9  FIX (returns empty array)
-    * Q10 RUNS (nros medio kinky nasty)
+    * Q9  RUNS
+    * Q10 RUNS
     * Q11 ?
     * Q12 RUNS
     * Q13 WORKS 

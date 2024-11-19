@@ -25,7 +25,6 @@ class InvoiceService:
         limit = page_size
         products = self.product_repository.get_products_by_product_brand(brand, skip, limit)
         invoices = []
-        print(products)
         
         for p in products:
             invoices.append(self.invoice_repository.get_invoices_by_product_id(p.product_id))

@@ -46,15 +46,28 @@ class ProductRepository:
     
     def get_products_with_no_invoice(self):
         view_name = "no_invoice_products"
-        return self.mongo.get_collection(view_name).find()
+        cursor = self.mongo.get_collection(view_name).find()
+        with cursor:
+            for product in cursor:
+                yield product
     
     def get_products_with_invoices(self, product_ids: list[int]):
-        return self._dict_to_product(
-            self.mongo.get_collection(self._COLLECTION_NAME).find({'product_id': { "$in": product_ids}})
-            );
+        cursor = self.mongo.get_collection(self._COLLECTION_NAME).find({'product_id': { "$in": product_ids}})
+        with cursor:
+            for product in cursor:
+                yield product
 
     def get_products_by_product_brand(self, brand: str, skip: int = 0, limit: int = 0):
-        return list(map(lambda p: self._dict_to_product(p), self.mongo.get_collection(self._COLLECTION_NAME).find({'brand': { '$regex': f'/{brand}/i'}}, skip=skip, limit=limit)))
+        return list(
+            map(
+                lambda p: self._dict_to_product(p),
+                self.mongo.get_collection(self._COLLECTION_NAME).find(
+                    {'brand': {'$regex': brand, '$options': 'i'}},
+                    skip=skip,
+                    limit=limit
+                )
+            )
+        )
 
     def _product_to_dict(self, product: Product) -> dict:
         return {
