@@ -21,6 +21,16 @@ class MongoConnection:
         """Devuelve una colección específica"""
         return self.db[collection_name]
 
+    def create_view(self, view_name, view_on, pipeline):
+        return self.db.command({
+            "create": view_name,
+            "viewOn": view_on,
+            "pipeline": pipeline
+        })
+
+    def drop_view(self, view_name):
+        self.db[view_name].drop()
+
     def close(self):
         """Cierra la conexión con MongoDB"""
         self.client.close()

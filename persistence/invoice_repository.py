@@ -17,29 +17,36 @@ class InvoiceRepository:
             .all()
         )
 
-    def get_count_by_client(client_id: int):
-        return InvoiceByClient.objects().filter(client_id=client_id).count()
+    def get_count_by_client(self, client_id: int):
+        return len(frozenset(InvoiceByClient
+                             .objects()
+                             .filter(client_id=client_id)
+                             .values_list("invoice_id", flat=True)
+                             .all()))
 
-    def get_invoices_product_ids():
-        return (
+    def get_invoices_product_ids(self):
+        return list(
             InvoiceByProduct.objects()
             .values_list("product_id", flat=True)
             .distinct()
             .all()
         )
 
-    def get_invoices_by_client_id(client_id: int):
+    def get_invoices_by_client_id(self, client_id: int):
         return InvoiceByClient.objects().filter(client_id=client_id).all()
 
-    def get_invoices_by_product_id(product_id: int):
+    def get_invoices_by_product_id(self, product_id: int):
         return InvoiceByProduct.objects().filter(product_id=product_id).all()
 
-    def get_client_total_expenses(client_id: int):
+    def get_client_total_expenses(self, client_id: int):
         return reduce(
-            lambda i, t: i.total_with_tax + t,
-            InvoiceByClient.objects().filter(client_id=client_id).all(),
-            0.0,
+            lambda i, t: i + t,
+            InvoiceByClient.objects().filter(client_id=client_id).values_list("total_with_tax", flat=True).all(),
+            0.0
         )
 
     def get_invoices_ordered_by_date(self):
         return InvoiceByDate.objects().all()
+    
+    def close(self):
+        self.connection.close()

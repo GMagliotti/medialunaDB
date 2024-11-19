@@ -36,13 +36,13 @@ class ClientRepository:
             {"client_id": client_id}
         )
 
-    def get_clients(self, skip=0, limit=0, filter={}):
+    def get_clients(self, filter={}, skip: int = 0, limit: int = 0):
         cursor = self.mongo.get_collection(self._COLLECTION_NAME).find(
-            filter=filter, skip=skip, limit=limit, batch_size=100
+            filter=filter, skip=int(skip), limit=int(limit), batch_size=100
         )
         with cursor:
-            for product in cursor:
-                yield self._dict_to_client(product)
+            for client in cursor:
+                yield self._dict_to_client(client)
 
     def get_clients_by_name(self, first_name: str, last_name: str, skip=0, limit=0):
         name_filter = {"first_name": first_name, "last_name": last_name}
@@ -51,13 +51,13 @@ class ClientRepository:
     def get_phones_with_client(self, skip=0, limit=0):
         pipeline = [
             {
-                "$unwind": "$phone"
-            },  # Unwind the embedded phone list to create a document per phone
+                "$unwind": "$phone_numbers"
+            },
             {
                 "$project": {
-                    "phone.area_code": 1,
-                    "phone.phone_number": 1,
-                    "phone._type": 1,
+                    "phone_numbers.area_code": 1,
+                    "phone_numbers.phone_number": 1,
+                    "phone_numbers._type": 1,
                     "client_id": 1,
                     "first_name": 1,
                     "last_name": 1,
@@ -67,7 +67,7 @@ class ClientRepository:
             },
         ]
         return self.mongo.get_collection(self._COLLECTION_NAME).aggregate(
-            pipeline, allowDiskUse=True, batchSize=100
+            pipeline, allowDiskUse=True, batchSize=100, skip=skip, limit=limit
         )
 
     def get_client(self, client_id: int) -> Client:

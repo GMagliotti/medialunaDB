@@ -34,6 +34,23 @@ class ProductRepository:
     def delete_one(self, product: Product):
         self.mongo.get_collection(self._COLLECTION_NAME).delete_one({'product_id': product.product_id})
 
+    def create_view_no_invoice_products(self, product_ids: list):
+        view_name = "no_invoice_products"
+        self.mongo.drop_view(view_name)
+        view_on_name = "products"
+        pipeline = [{'$match': {'product_id': {'$nin': product_ids}}}]
+        self.mongo.create_view(view_name, view_on_name, pipeline)
+    
+    def get_products_with_no_invoice(self):
+        view_name = "no_invoice_products"
+        return self.mongo.get_collection(view_name).find()
+    
+    def get_products_with_invoices(self, product_ids: list[int]):
+        return self._dict_to_product(
+            self.mongo.get_collection(self._COLLECTION_NAME).find({'product_id': { "$in": product_ids}})
+            );
+
+
     def _product_to_dict(self, product: Product) -> dict:
         return {
             'product_id': product.product_id,
