@@ -10,6 +10,9 @@ class ProductService:
     def create_view_no_invoice_products(self):
         product_ids = list(self.invoice_repository.get_invoices_product_ids())
         return self.product_repository.create_view_no_invoice_products(product_ids)
+    
+    def get_products(self):
+        return self.product_repository.get_products();
 
     def get_products_with_no_invoice(self):
         product_ids = list(self.invoice_repository.get_invoices_product_ids())
