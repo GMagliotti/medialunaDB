@@ -41,7 +41,7 @@ async def get_clients(
 
 
 @client_router.get(
-    "/{first_name}/{last_name}/phones-and-id", response_model=list[ClientPhonesResponse]
+    "/{first_name}/{last_name}/phones-and-id", response_model=List[ClientPhonesResponse]
 )
 async def get_client_phones_and_id(
     first_name: str,

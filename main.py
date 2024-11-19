@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from persistence.cassandra_connection import CassandraConnection
 from persistence.mongo_connection import MongoConnection
 from controllers.client_controller import client_router
+from controllers.invoice_controller import invoice_router
 
 cassandra_client = CassandraConnection(["localhost"], 9042)
 mongo_client = MongoConnection()
@@ -9,6 +10,7 @@ mongo_client = MongoConnection()
 app = FastAPI()
 
 app.include_router(client_router, prefix="/clients", tags=["clients"])
+app.include_router(invoice_router, prefix="/invoices", tags=["invoices"])
 
 
 @app.get("/")

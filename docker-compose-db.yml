@@ -68,9 +68,25 @@ networks:
 volumes:
   mongo_data:
     driver: local
+    driver_opts:
+      type: none
+      device: /home/lucky_number/docker_volumes/mongo_data
+      o: bind
   cassandra1_data:
     driver: local
+    driver_opts:
+      type: none
+      device: /home/lucky_number/docker_volumes/cassandra1_data
+      o: bind
   cassandra2_data:
     driver: local
+    driver_opts:
+      type: none
+      device: /home/lucky_number/docker_volumes/cassandra2_data
+      o: bind
   cassandra3_data:
     driver: local
+    driver_opts:
+      type: none
+      device: /home/lucky_number/docker_volumes/cassandra3_data
+      o: bind

@@ -35,14 +35,15 @@ class InvoiceRepository:
         invoices_without_detail = InvoiceByClient.objects().filter(client_id=client_id).all()
         
         invoices = []
-        
+
         for i in invoices_without_detail:
             invoices.append({
-                invoice: i,
-                detail: InvoiceDetail.objects().filter(invoice_id=i.invoice_id).all()
+                "invoice": i,
+                "detail": list(InvoiceDetail.objects().filter(invoice_id=i.invoice_id).allow_filtering().all())
             })
         
         return invoices
+
 
     def get_invoices_by_product_id(self, product_id: int):
         details = InvoiceDetail.objects().filter(product_id=product_id).all()
@@ -50,8 +51,8 @@ class InvoiceRepository:
         invoices = []
         for id in invoices_ids:
             invoices.append({
-                invoice: InvoiceByClient.objects().filter(invoice_id=id).all(),
-                detail: InvoiceDetail.objects().filter(invoice_id=id).all()
+                "invoice": InvoiceByClient.objects().filter(invoice_id=id).all(),
+                "detail": InvoiceDetail.objects().filter(invoice_id=id).all()
             })
         
         return invoices
