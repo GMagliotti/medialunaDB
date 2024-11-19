@@ -46,16 +46,25 @@ class InvoiceRepository:
 
 
     def get_invoices_by_product_id(self, product_id: int):
-        details = InvoiceDetail.objects().filter(product_id=product_id).all()
-        invoices_ids = frozenset(map(lambda d: d.invoice_id, details))
-        invoices = []
-        for id in invoices_ids:
-            invoices.append({
-                "invoice": InvoiceByClient.objects().filter(invoice_id=id).all(),
-                "detail": InvoiceDetail.objects().filter(invoice_id=id).all()
-            })
-        
-        return invoices
+        details = InvoiceDetail.objects(product_id=product_id).values_list("invoice_id", flat=True).all()
+        invoice_ids = list(frozenset(details))
+        # Fetch all invoices in one query
+        invoices = InvoiceByClient.objects().filter(invoice_id__in=invoice_ids).allow_filtering().all()
+
+        # Fetch all details in one query
+        details = InvoiceDetail.objects().filter(invoice_id__in=invoice_ids).allow_filtering().all()
+
+        # Group details by invoice_id
+        detail_map = {id: [] for id in invoice_ids}
+        for detail in details:
+            detail_map[detail.invoice_id].append(detail)
+
+        # Construct the response
+        for invoice in invoices:
+            yield {
+                "invoice": invoice,
+                "detail": detail_map.get(invoice.invoice_id, [])
+            }
 
 
     def get_client_total_expenses(self, client_id: int):

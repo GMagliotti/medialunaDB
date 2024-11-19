@@ -43,7 +43,8 @@ def query9(invoice_service: InvoiceService):
     invoice_list = invoice_service.get_invoices_by_product_brand(brand='Ipsum')
     for invoice in invoice_list:
         for a in invoice:
-            print(a)
+            print(a['invoice'])
+            print("---------------------------------------------------------------------------------------------------")
 
 def query10(client_service: ClientService):
     for client in client_service.get_clients_with_total_expenses():
@@ -137,19 +138,19 @@ if __name__ == "__main__":
     print(invoices)
     """
     """
-    * Q1  RUNS 
-    * Q2  FIX (devuelve todo, solo deberia ser cli_id y fono) 
-    * Q3  RUNS (no .to_dict())
-    * Q4  RUNS 
+    * Q1  RUNS
+    * Q2  RUNS
+    * Q3  RUNS
+    * Q4  RUNS
     * Q5  RUNS
-    * Q6  RUNS (pero corre medio roto, testear con papi)
-    * Q7  FIX // juani
-    * Q8  FIX
+    * Q6  RUNS
+    * Q7  RUNS
+    * Q8  RUNS
     * Q9  RUNS
     * Q10 RUNS
     * Q11 ?
-    * Q12 RUNS
-    * Q13 WORKS 
+    * Q12 ?
+    * Q13 WORKS
     * Q14 WORKS
     """
 
