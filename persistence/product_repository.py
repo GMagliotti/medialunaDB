@@ -1,4 +1,4 @@
-from models.product import Product
+from models.populate.product import Product
 from persistence.mongo_connection import MongoConnection
 
 class ProductRepository:
