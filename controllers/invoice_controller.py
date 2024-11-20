@@ -27,3 +27,23 @@ async def get_invoices(
     ]
 
     return result
+
+
+@invoice_router.get(
+    "/{product_brand}", response_model=list[InvoiceDTO]
+)
+async def get_invoices(
+        product_brand: str,
+        mongo_client: MongoConnection = Depends(get_mongo_connection),
+        cassandra_client: CassandraConnection = Depends(get_cassandra_connection)
+):
+
+    invoice_service = InvoiceService(mongo_client, cassandra_client)
+
+    raw_invoices = invoice_service.get_invoices_by_product_brand(product_brand)
+    result = [
+        InvoiceDTO.from_model(invoice_data["invoice"], invoice_data["detail"])
+        for invoice_data in raw_invoices
+    ]
+
+    return result

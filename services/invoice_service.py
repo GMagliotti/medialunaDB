@@ -23,10 +23,12 @@ class InvoiceService:
     def get_invoices_by_product_brand(self, brand: str, page: int = 0, page_size: int = 0):
         skip = page * page_size
         limit = page_size
-        products = self.product_repository.get_products_by_product_brand(brand, skip, limit)
+        products = list(self.product_repository.get_products_by_product_brand(brand, skip, limit))
+        product_ids = map(lambda p: p.product_id, products)
         invoices = []
-        
-        for p in products:
-            invoices.append(self.invoice_repository.get_invoices_by_product_id(p.product_id))
-        
+
+        for p in product_ids:
+            invoices.extend(list(self.invoice_repository.get_invoices_by_product_id(p)))
+
         return invoices
+
