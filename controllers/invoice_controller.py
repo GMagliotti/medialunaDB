@@ -9,6 +9,24 @@ invoice_router = APIRouter()
 
 
 @invoice_router.get(
+        "/by_date", response_model=list[InvoiceDTO]
+)
+async def get_invoices_by_date(
+        mongo_client: MongoConnection = Depends(get_mongo_connection),
+        cassandra_client: CassandraConnection = Depends(get_cassandra_connection)
+):
+
+    invoice_service = InvoiceService(mongo_client, cassandra_client)
+
+    raw_invoices = invoice_service.get_invoice_ordered_by_date()
+    result = [
+        InvoiceDTO.from_model(invoice_data["invoice"], invoice_data["detail"])
+        for invoice_data in raw_invoices
+    ]
+
+    return result
+
+@invoice_router.get(
     "/{first_name}/{last_name}", response_model=list[InvoiceDTO]
 )
 async def get_invoices(

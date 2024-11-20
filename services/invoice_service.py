@@ -32,3 +32,5 @@ class InvoiceService:
 
         return invoices
 
+    def get_invoice_ordered_by_date(self):
+        return self.invoice_repository.get_invoices_ordered_by_date()

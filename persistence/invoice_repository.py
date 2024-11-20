@@ -76,7 +76,25 @@ class InvoiceRepository:
         )
 
     def get_invoices_ordered_by_date(self):
-        return InvoiceByDate.objects().all()
+        details = InvoiceByDate.objects(id=1).order_by("-date").all()
+        invoice_ids = list(map(lambda d: d.invoice_id, details))
+        # Fetch all invoices in one query
+        invoices = InvoiceByClient.objects().filter(invoice_id__in=invoice_ids).allow_filtering().all()
+
+        # Fetch all details in one query
+        details = InvoiceDetail.objects().filter(invoice_id__in=invoice_ids).allow_filtering().all()
+
+        # Group details by invoice_id
+        detail_map = {id: [] for id in invoice_ids}
+        for detail in details:
+            detail_map[detail.invoice_id].append(detail)
+
+        # Construct the response
+        for invoice in invoices:
+            yield {
+                "invoice": invoice,
+                "detail": detail_map.get(invoice.invoice_id, [])
+            }
     
     def close(self):
         self.connection.close()

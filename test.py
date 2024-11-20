@@ -42,13 +42,16 @@ def query8(product_service: ProductService):
 def query9(invoice_service: InvoiceService):
     invoice_list = invoice_service.get_invoices_by_product_brand(brand='Ipsum')
     for invoice in invoice_list:
-        for a in invoice:
-            print(a['invoice'])
-            print("---------------------------------------------------------------------------------------------------")
+        print(invoice)
+        print("---------------------------------------------------------------------------------------------------")
 
 def query10(client_service: ClientService):
     for client in client_service.get_clients_with_total_expenses():
         print(client)
+
+def query11(invoice_service: InvoiceService):
+    for invoice in invoice_service.get_invoice_ordered_by_date():
+        print(invoice)
 
 def query12(invoice_service: InvoiceService):
     invoice_service.create_view_no_invoice_products();
@@ -78,7 +81,7 @@ if __name__ == "__main__":
 
     invoice_service = InvoiceService(mongo_connection, cassandra_connection)
 
-    query8(product_service)
+    query11(invoice_service=invoice_service)
 
     """
     for client in client_service.get_clients_with_invoices():
@@ -138,16 +141,16 @@ if __name__ == "__main__":
     print(invoices)
     """
     """
-    * Q1  RUNS
-    * Q2  RUNS
-    * Q3  RUNS
-    * Q4  RUNS
-    * Q5  RUNS
-    * Q6  RUNS
-    * Q7  RUNS
-    * Q8  RUNS
-    * Q9  RUNS
-    * Q10 RUNS
+    * Q1  WORKS
+    * Q2  WORKS
+    * Q3  WORKS
+    * Q4  WORKS
+    * Q5  WORKS* (w/ view)
+    * Q6  WORKS
+    * Q7  WORKS
+    * Q8  WORKS?
+    * Q9  WORKS
+    * Q10 WORKS
     * Q11 ?
     * Q12 ?
     * Q13 WORKS

@@ -89,7 +89,10 @@ def populate_cassandra(invoice_df, invoice_details_df):
                 total_with_tax=row["total_con_iva"],
                 tax=row["iva"],
             )
-            InvoiceByClient.if_not_exists().create(
+        except LWTException as e:
+            print(f'index: {i} - {e.existing}')
+        try:
+            InvoiceByDate.if_not_exists().create(
                 client_id=row["nro_cliente"],
                 date=row["fecha"],
                 invoice_id=row["nro_factura"],
