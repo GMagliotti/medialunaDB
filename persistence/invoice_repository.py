@@ -76,10 +76,10 @@ class InvoiceRepository:
         )
 
     def get_invoices_ordered_by_date(self):
-        details = InvoiceByDate.objects(id=1).order_by("-date").all()
-        invoice_ids = list(map(lambda d: d.invoice_id, details))
         # Fetch all invoices in one query
-        invoices = InvoiceByClient.objects().filter(invoice_id__in=invoice_ids).allow_filtering().all()
+        invoices = InvoiceByDate.objects(id=1).order_by("-date").all()
+
+        invoice_ids = list(map(lambda d: d.invoice_id, invoices))
 
         # Fetch all details in one query
         details = InvoiceDetail.objects().filter(invoice_id__in=invoice_ids).allow_filtering().all()
