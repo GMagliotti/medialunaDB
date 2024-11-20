@@ -16,7 +16,6 @@ class ProductService:
         return self.product_repository.get_products()
 
     def get_products_with_no_invoice(self):
-        product_ids = list(self.invoice_repository.get_invoices_product_ids())
         return self.product_repository.get_products_with_no_invoice()
 
     def get_products_with_invoices(self):
